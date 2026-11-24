@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Rescue</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23121212'/%3E%3Ctext x='16' y='23' font-family='Arial,sans-serif' font-size='20' font-weight='700' text-anchor='middle' fill='%23D6A84B'%3ER%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/game.css">
+  <link rel="stylesheet" href="css/editor.css">
+</head>
+<body>
+  <header class="app-header">
+    <span class="brand" aria-hidden="true">Rescue</span>
+    <div id="language-switch" class="lang-switch" role="group"></div>
+  </header>
+
+  <p id="storage-warning" class="storage-warning" role="alert" hidden></p>
+
+  <!-- Every screen is one <section>. Only one is visible at a time (see js/app.js). -->
+  <main id="app">
+    <!-- Shown only if the app's files could not be loaded or started (js/app.js hides it on a
+         successful start). Styled inline so it is readable even when the CSS files are missing. -->
+    <div id="startup-problem" style="max-width:640px;margin:3rem auto;padding:1.5rem;border:1px solid #D6A84B;border-radius:10px;background:#1C1C1C;color:#F2F2F2;font-family:system-ui,sans-serif;line-height:1.5">
+      <p style="margin:0 0 .75rem;font-size:1.25rem;font-weight:700;color:#D6A84B">Aplikace se nespustila / The app did not start</p>
+      <p style="margin:0 0 .75rem">Nejčastější příčina: soubor <b>index.html</b> byl otevřen přímo ze ZIP archivu nebo bez ostatních souborů. Klikněte na stažený ZIP pravým tlačítkem, zvolte <b>Extrahovat vše</b> a pak otevřete <b>index.html</b> v rozbalené složce. Vedle něj musí být složky <b>css</b>, <b>js</b>, <b>lang</b> a <b>data</b>.</p>
+      <p style="margin:0 0 .75rem">Most common cause: <b>index.html</b> was opened directly from the ZIP file or without the other files. Right-click the downloaded ZIP, choose <b>Extract All</b>, then open <b>index.html</b> in the extracted folder. The folders <b>css</b>, <b>js</b>, <b>lang</b> and <b>data</b> must be next to it.</p>
+      <p id="startup-problem-details" style="margin:0;font-family:monospace;font-size:.85rem;color:#A3A3A3;white-space:pre-wrap"></p>
+    </div>
+
+    <section id="screen-menu" class="screen" hidden></section>
+    <section id="screen-setup" class="screen" hidden></section>
+    <section id="screen-game" class="screen" hidden></section>
+    <section id="screen-results" class="screen" hidden></section>
+    <section id="screen-quizzes" class="screen" hidden></section>
+    <section id="screen-editor" class="screen" hidden></section>
+    <section id="screen-preview" class="screen" hidden></section>
+  </main>
+
+  <dialog id="dialog" class="dialog"></dialog>
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+
+  <noscript>Rescue needs JavaScript to run. / Rescue potřebuje ke spuštění JavaScript.</noscript>
+
+  <!-- Collects technical details for the startup message above, in case something fails. -->
+  <script>
+    window.addEventListener('error', function (event) {
+      var details = document.getElementById('startup-problem-details');
+      if (!details) return;
+      var source = event.target && (event.target.src || event.target.href);
+      details.textContent += (source ? 'Could not load: ' + source : 'Error: ' + event.message) + '\n';
+    }, true);
+  </script>
+
+  <!-- Order matters: translations and data first, then logic, then screens, then start-up. -->
+  <script src="lang/cs.js"></script>
+  <script src="lang/en.js"></script>
+  <script src="data/preset-quizzes.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/ui-common.js"></script>
+  <script src="js/ui-game.js"></script>
+  <script src="js/ui-editor.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

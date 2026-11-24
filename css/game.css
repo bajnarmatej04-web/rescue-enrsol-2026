@@ -1,0 +1,213 @@
+/* game.css
+   Game setup, the game board, the question view, the team panel and the results screen.
+   The game screens are made for projectors: big text, high contrast, little decoration. */
+
+/* The game screen fills the whole window height. */
+body { display: flex; flex-direction: column; }
+#app { flex: 1; display: flex; flex-direction: column; }
+.screen { flex: 1; }
+#screen-game { display: flex; flex-direction: column; }
+
+/* In fullscreen the app header is hidden to give the board all the space. */
+body.is-fullscreen[data-screen="game"] .app-header { display: none; }
+
+/* ---------- Setup ---------- */
+
+.stepper { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); }
+.stepper .field-label { margin-right: var(--space-2); }
+.stepper .btn { min-width: 2.75rem; padding: 0; font-size: var(--text-xl); }
+.stepper-value { min-width: 2ch; text-align: center; font-size: var(--text-2xl); font-weight: 700; color: var(--color-accent); }
+
+.team-name-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-3); }
+.setup-summary { font-size: var(--text-lg); margin-bottom: var(--space-2); }
+
+.order-list { margin: 0; padding-left: 1.6rem; font-size: var(--text-xl); font-weight: 600; }
+.order-list li { padding: var(--space-1) 0; }
+.order-list li::marker { color: var(--color-accent); }
+
+/* ---------- Game layout ---------- */
+
+.game-layout {
+  flex: 1; display: flex; flex-direction: column; gap: var(--space-4);
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  min-height: 0;
+}
+
+.game-topbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.game-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-2) var(--space-4); min-width: 0; }
+.game-quiz-title { font-size: var(--text-xl); font-weight: 650; }
+.game-progress { color: var(--color-text-muted); font-size: var(--text-sm); font-variant-numeric: tabular-nums; }
+.game-controls { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.game-controls .btn { min-height: 2.5rem; padding: var(--space-1) var(--space-3); font-size: var(--text-sm); }
+
+.game-main {
+  flex: 1; display: grid; gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+  min-height: 0;
+}
+.game-stage { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; min-height: 0; }
+
+/* Who is playing now */
+.turn-banner {
+  display: flex; align-items: baseline; gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-surface); border: 1px solid rgba(214, 168, 75, 0.45);
+  border-left: 6px solid var(--color-accent); border-radius: var(--radius);
+}
+.turn-label { text-transform: uppercase; letter-spacing: 0.1em; font-size: var(--text-sm); font-weight: 600; color: var(--color-text-muted); }
+.turn-team { font-size: clamp(1.5rem, 2.6vw, 2.6rem); font-weight: 700; color: var(--color-accent); line-height: 1.15; overflow-wrap: anywhere; }
+
+/* ---------- Board ---------- */
+
+.board {
+  flex: 1; display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: auto repeat(5, minmax(56px, 1fr));
+  gap: clamp(6px, 0.8vw, 12px);
+  min-height: 380px;
+}
+
+.board-category {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  padding: var(--space-3) var(--space-2);
+  font-size: clamp(0.95rem, 1.45vw, 1.6rem); font-weight: 700; line-height: 1.2;
+  text-transform: uppercase; letter-spacing: 0.03em;
+  border-bottom: 2px solid var(--color-accent);
+  overflow-wrap: anywhere; hyphens: auto;
+}
+
+.board-cell {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  padding: var(--space-2);
+  background: var(--color-elevated); border: 1px solid var(--color-border-strong); border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+.board-cell .cell-points {
+  font-size: clamp(1.5rem, 3.4vw, 3.4rem); font-weight: 800; color: var(--color-accent);
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em; line-height: 1;
+}
+button.board-cell:hover { background: #303030; border-color: var(--color-accent); transform: translateY(-1px); }
+
+/* Played questions stay visible, but clearly inactive: dimmed, struck through, and with the result as text. */
+.board-cell.is-used { background: var(--color-surface); border-color: var(--color-border); border-style: dashed; cursor: default; }
+.board-cell.is-used .cell-points { color: #5C5C5C; text-decoration: line-through; text-decoration-thickness: 3px; font-size: clamp(1.1rem, 2.2vw, 2.2rem); }
+.cell-result { font-size: clamp(0.7rem, 0.95vw, 0.95rem); color: var(--color-text-muted); text-align: center; line-height: 1.2; overflow-wrap: anywhere; }
+.was-correct .cell-result { color: var(--color-correct); }
+.was-incorrect .cell-result { color: var(--color-incorrect); }
+
+/* ---------- Question view ---------- */
+
+.question-view {
+  flex: 1; display: flex; flex-direction: column; gap: var(--space-5);
+  padding: clamp(1.25rem, 3vw, 3rem);
+  background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius);
+  min-height: 380px;
+}
+.question-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-3); align-items: baseline; }
+.question-category { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; color: var(--color-text-muted); font-size: clamp(0.95rem, 1.3vw, 1.3rem); }
+.question-points { font-size: clamp(1.4rem, 2.4vw, 2.4rem); font-weight: 800; color: var(--color-accent); font-variant-numeric: tabular-nums; }
+.question-text {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  font-size: clamp(1.6rem, 3.1vw, 3.3rem); font-weight: 650; line-height: 1.3;
+  white-space: pre-line; overflow-wrap: anywhere;
+}
+.answer-box {
+  padding: var(--space-4) var(--space-5);
+  border: 2px solid var(--color-accent); border-radius: var(--radius);
+  background: var(--color-accent-soft);
+}
+.answer-label { display: block; text-transform: uppercase; letter-spacing: 0.1em; font-size: var(--text-sm); font-weight: 700; color: var(--color-accent); margin-bottom: var(--space-1); }
+.answer-text { font-size: clamp(1.4rem, 2.5vw, 2.6rem); font-weight: 700; line-height: 1.25; white-space: pre-line; overflow-wrap: anywhere; }
+.answer-note { margin-top: var(--space-3); font-size: clamp(1rem, 1.4vw, 1.4rem); color: var(--color-text-muted); white-space: pre-line; }
+
+/* Smaller text for long questions and answers, so everything fits without scrolling. */
+.question-view.has-long-question .question-text { font-size: clamp(1.4rem, 2.4vw, 2.6rem); }
+.question-view.is-revealed .question-text { flex: 0 0 auto; font-size: clamp(1.3rem, 2.1vw, 2.3rem); }
+.question-view.is-revealed.has-long-question .question-text { font-size: clamp(1.15rem, 1.7vw, 1.9rem); }
+.question-view.has-long-answer .answer-text { font-size: clamp(1.1rem, 1.7vw, 1.9rem); line-height: 1.35; }
+.question-view.is-revealed { gap: var(--space-4); padding: clamp(1rem, 2.2vw, 2.2rem); }
+.question-view.is-revealed .question-actions { margin-top: auto; }
+
+.question-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-3); }
+.question-actions .btn { min-height: 3.5rem; padding: var(--space-3) var(--space-6); font-size: clamp(1rem, 1.3vw, 1.3rem); }
+.question-actions .btn-ghost { margin-right: auto; }
+
+/* ---------- Team panel ---------- */
+
+.team-panel {
+  display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius);
+  min-height: 0; overflow-y: auto;
+}
+.team-panel-title { font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-muted); }
+.team-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.team-row {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  background: var(--color-bg);
+}
+.team-row.is-current { border-color: var(--color-accent); background: var(--color-accent-soft); box-shadow: inset 4px 0 0 var(--color-accent); }
+.team-position {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.75rem; height: 1.75rem; border-radius: 50%;
+  background: var(--color-elevated); color: var(--color-text-muted); font-size: var(--text-sm); font-weight: 700;
+}
+.team-row.is-current .team-position { background: var(--color-accent); color: var(--color-on-accent); }
+.team-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.team-name { font-weight: 650; font-size: clamp(1rem, 1.25vw, 1.25rem); overflow-wrap: anywhere; line-height: 1.2; }
+.team-tags { display: flex; flex-wrap: wrap; gap: var(--space-1); }
+.team-tags:empty { display: none; }
+.team-score {
+  min-width: 4.5rem; padding: var(--space-1) var(--space-2);
+  background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm);
+  font-size: clamp(1.25rem, 1.8vw, 1.8rem); font-weight: 800; text-align: right;
+  font-variant-numeric: tabular-nums; cursor: pointer;
+}
+.team-score:hover { border-color: var(--color-border-strong); background: var(--color-elevated); }
+.team-score.is-negative { color: var(--color-incorrect); }
+.team-panel-hint { font-size: 0.8rem; color: var(--color-text-muted); margin-top: auto; }
+
+/* Score correction dialog */
+.score-editor { display: flex; flex-direction: column; gap: var(--space-2); }
+.score-editor-row { display: flex; gap: var(--space-2); }
+.input-score { text-align: center; font-size: var(--text-2xl); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ---------- Results ---------- */
+
+.results { text-align: center; }
+.results-eyebrow { color: var(--color-text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-size: var(--text-sm); font-weight: 600; }
+.results-title { margin-top: var(--space-4); color: var(--color-text-muted); font-size: var(--text-2xl); font-weight: 600; }
+.results-winner { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 800; color: var(--color-accent); line-height: 1.1; margin: var(--space-2) 0 var(--space-3); overflow-wrap: anywhere; }
+.results-note { color: var(--color-text-muted); }
+.results .panel { margin-top: var(--space-5); text-align: left; padding: var(--space-2) var(--space-4); }
+.results .page-actions { justify-content: center; }
+
+.results-table { width: 100%; border-collapse: collapse; font-size: var(--text-lg); }
+.results-table th, .results-table td { padding: var(--space-3) var(--space-2); border-bottom: 1px solid var(--color-border); text-align: left; }
+.results-table thead th { font-size: var(--text-sm); color: var(--color-text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+.results-table tbody tr:last-child > * { border-bottom: 0; }
+.results-table tbody th { font-weight: 650; }
+.results-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+.results-table .score { font-weight: 800; }
+.results-table .rank { width: 4rem; color: var(--color-text-muted); font-weight: 700; }
+.results-table tr.is-winner .rank,
+.results-table tr.is-winner th,
+.results-table tr.is-winner .score { color: var(--color-accent); }
+
+/* ---------- Smaller screens (tablets in portrait, small laptops) ---------- */
+
+@media (max-width: 900px) {
+  .game-main { grid-template-columns: 1fr; }
+  .team-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .board { min-height: 320px; }
+  .board-category { font-size: 0.8rem; letter-spacing: 0; }
+}
+
+@media (max-width: 640px) {
+  .game-layout { padding: var(--space-3); }
+  .question-actions .btn { flex: 1 1 auto; padding: var(--space-3); }
+  .question-actions .btn-ghost { margin-right: 0; }
+}

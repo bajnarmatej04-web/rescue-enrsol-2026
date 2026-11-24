@@ -1,0 +1,16 @@
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor settings
+.vscode/
+.idea/
+*.swp
+
+# Exported quiz files and screenshots made while testing
+/exports/
+/screenshots/
+
+# Dependencies (the app has none, but just in case)
+node_modules/
